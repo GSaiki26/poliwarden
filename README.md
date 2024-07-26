@@ -39,6 +39,7 @@ cargo run --release
 cargo build --release -F http
 ```
 
+
 ### Policies 🫸
 When the application first starts, it creates the basic policies for the `master` credentials. The master identity is the one which initially can manage the policies and identities. The master credentials are defined in the [environment variables](#environment-variables-).
 
@@ -51,6 +52,7 @@ The policies can be managed using the following endpoints:
 
 As you should imagine, the `master` can access all the endpoints BECAUSE the initial policies are created for the master credentials. If someone else wants to access these endpoints, policies needs to be created for the wanted identity.
 
+
 ### Identities 👤
 The identities are used to identify the clients, which can be done using the bearer or the client's certificate.
 
@@ -60,6 +62,7 @@ The identities can be managed using the following endpoints:
 - `POST /identities`: Creates a new identity.
 - `PUT /identities/:id`: Updates the identity with the given ID.
 - `DELETE /identities/:id`: Deletes the identity with the given ID.
+
 
 ### Creating Identities 🧑
 To create an identity, a certificate can be defined. The bearer is a string that is used to identify the client. The certificate is a string that is used to identify the client using the client's certificate.
@@ -76,6 +79,7 @@ The identities can be created using the `POST /identities` endpoint. The body of
 > [!TIP]
 > If the `bearer` is not defined, the identity'll be created without a bearer. The bearer can be updated later using the `PUT /identities/:id` endpoint.
 
+
 ### Giving Access 🔒
 To give access to an identity, a policy needs to be created for the identity.
 
@@ -91,8 +95,10 @@ The policies can be created using the `POST /policies` endpoint. The body of the
 > [!NOTE]
 > As the path is a regex pattern, the `^` and `$` characters are used to match the start and the end of the path. So, be careful when defining the path.
 
+
 ### Revoking Access 🔓
 To revoke the access of an identity, the policy of the identity should be updated or deleted. The policies can be deleted using the `DELETE /policies/:id` endpoint.
+
 
 ### Allowing management 🛡️
 > [!CAUTION]
@@ -116,6 +122,7 @@ For example, to allow an identity to use the `GET /policies` endpoint, a policy 
 }
 ```
 
+
 ## Database 🗄️
 The application uses a database to store the policies and identities. The database can be changed based on the enabled [features](#features-).
 
@@ -129,6 +136,8 @@ erDiagram
     string bearer
     string certificate
     string salt
+    string created_at
+    string updated_at
   }
 
   policy {
@@ -137,6 +146,8 @@ erDiagram
     string method
     ulid owner_id FK
     ulid identity_id FK
+    string created_at
+    string updated_at
   }
 
   identity zero or many -- only one policy : Has
@@ -146,6 +157,7 @@ The `identity` stores the identities of the clients. The `policy` stores the pol
 
 The bearer and the certificate are used to identify the clients. The salt is used to hash the bearer and the certificate. So, watchout to 
 
+
 ## Features 💪
 The application can be built with different features to enable different databases and protocols.
 
@@ -154,12 +166,13 @@ If you're using Docker to run the application, you can specify the features usin
 docker build --build-arg features=http -t poliwarden:latest .
 ```
 
+
 ### Databases 🗄️
 > [!WARNING]
 > Just one database feature can be enabled at a time.
 
 Currently, the following databases are available:
-- `surrealdb`: A SurrealDB database.
+- `surreal`: A SurrealDB database.
 
 If no database feature is enabled, JSON files'll be used to store the policies and identities. They'll be created as: `policies.json` and `identities.json` at `/app/vol/` directory.
 
@@ -169,10 +182,9 @@ If no database feature is enabled, JSON files'll be used to store the policies a
 > By enabling multiple protocol features, ensure that the ports of the protocols are different.
 > Also, if any protocol feature is enabled, the application won't start.
 
-Currently, the following features are available:
+Currently, the following protocols are available:
 - `http` (protocol): Enables the HTTP server. (Can't use the client's certificate for the identification)
 - `https` (protocol): Enables the HTTPS server.
-- `surrealdb` (database): Enables the PostgreSQL database.
 
 
 ## Configuration 🛠️
@@ -197,6 +209,7 @@ The application can be configured using the following environment variables:
 | `POLIWARDEN_DISABLE_BEARER` | The flag to disable the bearer authentication.        |
 | `POLIWARDEN_SECRET_KEY`     | The secret key to hash the bearer and the certificate |
 
+
 ### Database Environment Variables 📄
 | Variable                 | Description                  |
 | :----------------------- | :--------------------------- |
@@ -206,10 +219,12 @@ The application can be configured using the following environment variables:
 | `POLIWARDEN_DB_PASSWORD` | The password of the database |
 | `POLIWARDEN_DB_NAME`     | The name of the database     |
 
+
 ### HTTP Environment Variables 📄
 | Variable                       | Description                 |
 | :----------------------------- | :-------------------------- |
 | `POLIWARDEN_FEATURE_HTTP_PORT` | The port of the application |
+
 
 ### HTTPS Environment Variables 📄
 | Variable                        | Description                      |
