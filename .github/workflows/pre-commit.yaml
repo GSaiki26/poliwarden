@@ -1,5 +1,9 @@
+name: Rust Code
+
 on:
   pull_request:
+    branches: [develop, master]
+  push:
     branches: [develop, master]
 
 jobs:
