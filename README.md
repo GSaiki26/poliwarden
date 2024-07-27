@@ -167,7 +167,7 @@ The application can be built with different features to enable different databas
 
 If you're using Docker to run the application, you can specify the features using the `--build-arg` flag:
 ```bash
-docker build --build-arg features=http -t poliwarden:latest .
+docker build --build-arg RUST_VERSION=1.80 --build-arg FEATURES=http,https -t poliwarden:latest .
 ```
 
 
