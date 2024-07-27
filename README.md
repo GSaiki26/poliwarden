@@ -44,21 +44,9 @@ cargo build --release -F http
 ```
 
 
-### Policies 🫸
-When the application first starts, it creates the basic policies for the `master` credentials. The master identity is the one which initially can manage the policies and identities. The master credentials are defined in the [environment variables](#environment-variables-).
-
-The policies can be managed using the following endpoints:
-- `GET /policies`: Returns all the policies.
-- `GET /policies/:id`: Returns the policy with the given ID.
-- `POST /policies`: Creates a new policy.
-- `PUT /policies/:id`: Updates the policy with the given ID.
-- `DELETE /policies/:id`: Deletes the policy with the given ID.
-
-As you should imagine, the `master` can access all the endpoints BECAUSE the initial policies are created for the master credentials. If someone else wants to access these endpoints, policies needs to be created for the wanted identity.
-
-
 ### Identities 👤
 The identities are used to identify the clients, which can be done using the bearer or the client's certificate.
+The bearer is a string present in the request's header that is used to identify the client. In the application, the bearer is a BASE64 encoded string, following the format: `base64("IDENTITY_ID:IDENTITY_BEARER")`
 
 The identities can be managed using the following endpoints:
 - `GET /identities`: Returns all the identities.
@@ -68,7 +56,7 @@ The identities can be managed using the following endpoints:
 - `DELETE /identities/:id`: Deletes the identity with the given ID.
 
 
-### Creating Identities 🧑
+#### Creating Identities 🧑
 To create an identity, a certificate can be defined. The bearer is a string that is used to identify the client. The certificate is a string that is used to identify the client using the client's certificate.
 
 The identities can be created using the `POST /identities` endpoint. The body of the request should be as follows:
@@ -82,6 +70,19 @@ The identities can be created using the `POST /identities` endpoint. The body of
 ```
 > [!TIP]
 > If the `bearer` is not defined, the identity'll be created without a bearer. The bearer can be updated later using the `PUT /identities/:id` endpoint.
+
+
+### Policies 🫸
+When the application first starts, it creates the basic policies for the `master` credentials. The master identity is the one which initially can manage the policies and identities. The master credentials are defined in the [environment variables](#environment-variables-).
+
+The policies can be managed using the following endpoints:
+- `GET /policies`: Returns all the policies.
+- `GET /policies/:id`: Returns the policy with the given ID.
+- `POST /policies`: Creates a new policy.
+- `PUT /policies/:id`: Updates the policy with the given ID.
+- `DELETE /policies/:id`: Deletes the policy with the given ID.
+
+As you should imagine, the `master` can access all the endpoints BECAUSE the initial policies are created for the master credentials. If someone else wants to access these endpoints, policies needs to be created for the wanted identity.
 
 
 ### Giving Access 🔒
