@@ -1,5 +1,4 @@
 // Libs
-use crate::{databases::Database, utils::traits::Model};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -32,24 +31,6 @@ pub struct PolicyOut {
     pub identity_id: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-}
-
-// Implementations
-impl Model for Policy {
-    fn get_table_name() -> String {
-        "policy".to_string()
-    }
-
-    fn get_migration_schema<T: Database>() -> String {
-        match T::get_database_name().as_str() {
-            "filedb" => "".to_string(),
-            _ => "".to_string(),
-        }
-    }
-
-    fn get_id(&self) -> String {
-        self.id.clone()
-    }
 }
 
 #[cfg(feature = "surreal")]

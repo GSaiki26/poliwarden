@@ -85,7 +85,7 @@ The policies can be managed using the following endpoints:
 As you should imagine, the `master` can access all the endpoints BECAUSE the initial policies are created for the master credentials. If someone else wants to access these endpoints, policies needs to be created for the wanted identity.
 
 
-### Giving Access 🔒
+### Giving Access 🔓
 To give access to an identity, a policy needs to be created for the identity.
 
 The policies can be created using the `POST /policies` endpoint. The body of the request should be as follows:
@@ -101,7 +101,7 @@ The policies can be created using the `POST /policies` endpoint. The body of the
 > As the path is a regex pattern, the `^` and `$` characters are used to match the start and the end of the path. So, be careful when defining the path.
 
 
-### Revoking Access 🔓
+### Revoking Access 🔒
 To revoke the access of an identity, the policy of the identity should be updated or deleted. The policies can be deleted using the `DELETE /policies/:id` endpoint.
 
 

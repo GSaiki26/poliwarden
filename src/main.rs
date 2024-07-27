@@ -2,6 +2,8 @@
 mod databases;
 mod errors;
 mod schemas;
+mod services;
+mod traits;
 mod utils;
 
 // Functions

@@ -1,8 +1,7 @@
 // Libs
-use super::Database;
 use crate::{
     errors::DatabaseError,
-    utils::{settings::DatabaseSettings, traits::Model},
+    traits::{database::Database, Model, ModelProperties, SerdeModel},
 };
 use async_trait::async_trait;
 use std::{
@@ -24,47 +23,42 @@ impl FileDatabase {
     /**
     Read a file and return the contents as a vector of models.
     */
-    fn read_file<T: Model>(&self) -> Result<Vec<T>, std::io::Error> {
-        let filename = format!("{}{}.json", &self.filepath, T::get_table_name());
+    fn read_file(&self, table_name: &str) -> Result<Vec<Model>, std::io::Error> {
+        let filename = format!("{}{}.json", &self.filepath, table_name);
         let reader = BufReader::new(File::open(filename)?);
-        let data: Vec<T> = serde_json::from_reader(reader)?;
+        let data: Vec<Model> = serde_json::from_reader(reader)?;
         Ok(data)
     }
 
     /**
     Write a vector of models to a file.
     */
-    fn write_file<T: Model, U: Into<Vec<T>>>(&self, data: U) -> Result<(), std::io::Error> {
-        let filename = format!("{}{}.json", &self.filepath, T::get_table_name());
+    fn write_file(&self, table_name: &str, data: Vec<Model>) -> Result<(), std::io::Error> {
+        let filename = format!("{}{}.json", &self.filepath, table_name);
         let writer = BufWriter::new(File::create(filename)?);
-        serde_json::to_writer(writer, &data.into())?;
+        serde_json::to_writer(writer, &data)?;
         Ok(())
     }
 
     /**
     Get the index of a record in a table by its id.
     */
-    fn get_record_index<T: Model, U: AsRef<str> + Send + Sync>(
-        &self,
-        table: &Vec<T>,
-        id: &U,
-    ) -> usize {
-        table
-            .iter()
-            .position(|x| x.get_id() == id.as_ref())
-            .unwrap()
+    fn get_record_index(&self, table: &Vec<Model>, id: &str) -> Option<usize> {
+        table.iter().position(|x| x.get_id() == id.as_ref())
+    }
+}
+
+impl Default for FileDatabase {
+    fn default() -> Self {
+        Self {
+            filepath: String::from(DATABASE_FILEPATH),
+        }
     }
 }
 
 #[async_trait]
 impl Database for FileDatabase {
-    fn new(_settings: DatabaseSettings) -> Self {
-        Self {
-            filepath: String::from(DATABASE_FILEPATH),
-        }
-    }
-
-    fn get_database_name() -> String {
+    fn get_database_name(&self) -> String {
         return String::from("filedb");
     }
 
@@ -72,62 +66,49 @@ impl Database for FileDatabase {
         Ok(())
     }
 
-    async fn migrate<T: Model>(&self) -> Result<(), DatabaseError> {
-        let filename = format!("{}{}.json", &self.filepath, T::get_table_name());
-        let file = File::create(filename)?;
-        let data: Vec<T> = Vec::new();
-        serde_json::to_writer(BufWriter::new(file), &data)?;
-        Ok(())
+    async fn get(&self, table_name: &str, id: &str) -> Result<Option<Model>, DatabaseError> {
+        let table: Vec<Model> = self.read_file(table_name)?;
+        let model_index = self.get_record_index(&table, id);
+        Ok(model_index.map(|index| table[index].clone()))
     }
 
-    async fn get<T: Model, U: AsRef<str> + Send + Sync>(
-        &self,
-        id: &U,
-    ) -> Result<Option<T>, DatabaseError> {
-        let table: Vec<T> = self.read_file()?;
-        let result = table.iter().find(|x| x.get_id() == id.as_ref());
-        Ok(result.cloned())
+    async fn get_all(&self, table_name: &str) -> Result<Vec<Model>, DatabaseError> {
+        Ok(self.read_file(&table_name)?)
     }
 
-    async fn get_all<T: Model>(&self) -> Result<Vec<T>, DatabaseError> {
-        let table: Vec<T> = self.read_file()?;
-        Ok(table)
-    }
-
-    async fn insert<T: Model>(&self, data: &T) -> Result<(), DatabaseError> {
-        let mut table: Vec<T> = self.read_file()?;
+    async fn insert(&self, table_name: &str, data: &Model) -> Result<(), DatabaseError> {
+        let mut table: Vec<Model> = self.read_file(&table_name)?;
         table.push(data.clone());
-        self.write_file(table)?;
+        self.write_file(&table_name, table)?;
         Ok(())
     }
 
-    async fn update<T: AsRef<str> + Send + Sync, U: Model>(
+    async fn update(
         &self,
-        id: &T,
-        data: &U,
+        table_name: &str,
+        id: &str,
+        data: &Model,
     ) -> Result<Option<()>, DatabaseError> {
-        let mut table: Vec<U> = self.read_file()?;
-        let record_index = self.get_record_index(&table, id);
-        table[record_index] = data.clone();
-        self.write_file(table)?;
+        let mut table: Vec<Model> = self.read_file(&table_name)?;
+        match self.get_record_index(&table, id) {
+            None => return Ok(None),
+            Some(record_index) => table[record_index] = data.clone(),
+        };
+        self.write_file(&table_name, table)?;
         Ok(Some(()))
     }
 
-    async fn delete<T: Model, U: AsRef<str> + Send + Sync>(
-        &self,
-        id: &U,
-    ) -> Result<(), DatabaseError> {
-        let mut table: Vec<T> = self.read_file()?;
-        let record_index = self.get_record_index(&table, id);
-        table.swap_remove(record_index);
-        self.write_file(table)?;
-        Ok(())
+    async fn delete(&self, table_name: &str, id: &str) -> Result<Option<()>, DatabaseError> {
+        let mut table: Vec<Model> = self.read_file(&table_name)?;
+        match self.get_record_index(&table, id) {
+            None => return Ok(None),
+            Some(record_index) => table.swap_remove(record_index),
+        };
+        self.write_file(&table_name, table)?;
+        Ok(Some(()))
     }
 
-    async fn query<T: Model, U: AsRef<str> + Send + Sync>(
-        &self,
-        _query: &U,
-    ) -> Result<Vec<T>, DatabaseError> {
+    async fn query(&self, _query: &str) -> Result<Vec<Model>, DatabaseError> {
         unimplemented!("Querying is not supported in the file database.");
     }
 

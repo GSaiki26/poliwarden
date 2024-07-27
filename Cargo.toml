@@ -27,6 +27,7 @@ surrealdb = { version = "1.5.4", default-features = false, optional = true }
 tokio = { version = "1.39.1", default-features = false, features = [
   "macros",
   "rt-multi-thread",
+  "sync",
 ] }
 tracing = { version = "0.1.40", default-features = false }
 tracing-subscriber = { version = "0.3.18", default-features = false }
