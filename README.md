@@ -1,6 +1,6 @@
 # PoliWarden
-[![.github/workflows/docker-build.yaml](https://github.com/GSaiki26/poliwarden/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/GSaiki26/poliwarden/actions/workflows/docker-build.yaml)
-[![.github/workflows/pre-commit.yaml](https://github.com/GSaiki26/poliwarden/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/GSaiki26/poliwarden/actions/workflows/pre-commit.yaml)
+[![Docker Build](https://github.com/GSaiki26/poliwarden/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/GSaiki26/poliwarden/actions/workflows/docker-build.yaml)
+[![Rust Code](https://github.com/GSaiki26/poliwarden/actions/workflows/rust-code.yaml/badge.svg)](https://github.com/GSaiki26/poliwarden/actions/workflows/rust-code.yaml)
 
 The `PoliWarden` is a gateway that enforces security policies on the incoming requests.
 
