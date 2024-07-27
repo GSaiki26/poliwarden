@@ -13,7 +13,7 @@ impl Error for DatabaseError {}
 
 impl Display for DatabaseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Database error")
+        write!(f, "Database error: {}", self.message)
     }
 }
 

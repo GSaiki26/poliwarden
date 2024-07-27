@@ -206,7 +206,7 @@ The application can be configured using the following environment variables:
 
 | Variable                    | Description                                           |
 | :-------------------------- | :---------------------------------------------------- |
-| `POLIWARDEN_LOG_LEVEL`      | The log level of the application                      |
+| `RUST_LOG`                  | The log level of the application                      |
 | `POLIWARDEN_MASTER_BEARER`  | The master bearer to access the application           |
 | `POLIWARDEN_MASTER_CERT`    | The master certificate to access the application      |
 | `POLIWARDEN_BEARER_HEADER`  | The header to get the bearer from the request         |

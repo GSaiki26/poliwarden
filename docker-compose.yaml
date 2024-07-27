@@ -1,0 +1,18 @@
+services:
+  poliwarden:
+    container_name: poliwarden
+    # image: poliwarden:latest
+    build:
+      context: .
+      args:
+        - RUST_VERSION=1.80
+        - ALPINE_VERSION=latest
+        - FEATURES=http
+    env_file: .env
+
+    # ports:
+    #   - "80:80/tcp"
+    #   - "443:443/tcp"
+
+    volumes:
+      - ./vol:/app/vol:rw

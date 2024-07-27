@@ -1,12 +1,10 @@
 // Libs
-use crate::errors::DatabaseError;
+use crate::{errors::DatabaseError, schemas::Model};
 use async_trait::async_trait;
-
-use super::Model;
 
 // Traits
 #[async_trait]
-pub trait Database: Default + Send + Sync {
+pub trait Database: Send + Sync {
     /**
     Get the database instance name. Its used to identify the database.
     Its not the database name, but the instance name. Such as SurrealDB, FileDB...
@@ -36,12 +34,7 @@ pub trait Database: Default + Send + Sync {
     /**
     Update a record in the database.
     */
-    async fn update(
-        &self,
-        table_name: &str,
-        id: &str,
-        data: &Model,
-    ) -> Result<Option<()>, DatabaseError>;
+    async fn update(&self, table_name: &str, data: &Model) -> Result<Option<()>, DatabaseError>;
 
     /**
     Delete a record from the database.

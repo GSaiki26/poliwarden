@@ -1,45 +1,40 @@
 // Libs
-use std::{env::var, sync::Arc};
-
+use crate::utils::utils::gracefully_shutdown;
 use once_cell::sync::Lazy;
+use std::{env::var, sync::Arc};
 
 // Data
 pub const DEFAULT_SETTINGS: Lazy<Arc<DefaultSettings>> = Lazy::new(|| {
     Arc::new(DefaultSettings {
-        log_level: var("POLIWARDEN_LOG_LEVEL").expect("POLIWARDEN_LOG_LEVEL must be set."),
-        master_bearer: var("POLIWARDEN_MASTER_BEARER").expect("POLIWARDEN_LOG_LEVEL must be set."),
-        master_cert: var("POLIWARDEN_MASTER_CERT").expect("POLIWARDEN_LOG_LEVEL must be set."),
-        bearer_header: var("POLIWARDEN_BEARER_HEADER").expect("POLIWARDEN_LOG_LEVEL must be set."),
-        disable_bearer: var("POLIWARDEN_DISABLE_BEARER")
-            .expect("POLIWARDEN_LOG_LEVEL must be set."),
-        secret_key: var("POLIWARDEN_SECRET_KEY").expect("POLIWARDEN_LOG_LEVEL must be set."),
+        log_level: get_env("POLIWARDEN_LOG_LEVEL"),
+        master_bearer: get_env("POLIWARDEN_MASTER_BEARER"),
+        master_cert: get_env("POLIWARDEN_MASTER_CERT"),
+        bearer_header: get_env("POLIWARDEN_BEARER_HEADER"),
+        disable_bearer: get_env("POLIWARDEN_DISABLE_BEARER"),
+        secret_key: get_env("POLIWARDEN_SECRET_KEY"),
     })
 });
 pub const DATABASE_SETTINGS: Lazy<Arc<DatabaseSettings>> = Lazy::new(|| {
     Arc::new(DatabaseSettings {
-        db_url: var("POLIWARDEN_DB_URL").expect("POLIWARDEN_DB_URL must be set."),
-        db_port: var("POLIWARDEN_DB_PORT").expect("POLIWARDEN_DB_PORT must be set."),
-        db_username: var("POLIWARDEN_DB_USERNAME").expect("POLIWARDEN_DB_USERNAME must be set."),
-        db_password: var("POLIWARDEN_DB_PASSWORD").expect("POLIWARDEN_DB_PASSWORD must be set."),
-        db_name: var("POLIWARDEN_DB_NAME").expect("POLIWARDEN_DB_NAME must be set."),
+        db_url: get_env("POLIWARDEN_DB_URL"),
+        db_port: get_env("POLIWARDEN_DB_PORT"),
+        db_username: get_env("POLIWARDEN_DB_USERNAME"),
+        db_password: get_env("POLIWARDEN_DB_PASSWORD"),
+        db_name: get_env("POLIWARDEN_DB_NAME"),
     })
 });
-pub const HTTP_SETTINGS: Lazy<Arc<HttpSettings>> = Lazy::new(|| {
-    Arc::new(HttpSettings {
-        feature_http_port: var("POLIWARDEN_FEATURE_HTTP_PORT")
-            .expect("POLIWARDEN_FEATURE_HTTP_PORT must be set."),
-    })
-});
-pub const HTTPS_SETTINGS: Lazy<Arc<HttpsSettings>> = Lazy::new(|| {
-    Arc::new(HttpsSettings {
-        feature_https_port: var("POLIWARDEN_FEATURE_HTTPS_PORT")
-            .expect("POLIWARDEN_FEATURE_HTTPS_PORT must be set."),
-        feature_https_cert: var("POLIWARDEN_FEATURE_HTTPS_CERT")
-            .expect("POLIWARDEN_FEATURE_HTTPS_CERT must be set."),
-        feature_https_key: var("POLIWARDEN_FEATURE_HTTPS_KEY")
-            .expect("POLIWARDEN_FEATURE_HTTPS_KEY must be set."),
-    })
-});
+// pub const HTTP_SETTINGS: Lazy<Arc<HttpSettings>> = Lazy::new(|| {
+//     Arc::new(HttpSettings {
+//         feature_http_port: get_env("POLIWARDEN_FEATURE_HTTP_PORT"),
+//     })
+// });
+// pub const HTTPS_SETTINGS: Lazy<Arc<HttpsSettings>> = Lazy::new(|| {
+//     Arc::new(HttpsSettings {
+//         feature_https_port: get_env("POLIWARDEN_FEATURE_HTTPS_PORT"),
+//         feature_https_cert: get_env("POLIWARDEN_FEATURE_HTTPS_CERT"),
+//         feature_https_key: get_env("POLIWARDEN_FEATURE_HTTPS_KEY"),
+//     })
+// });
 
 // Structs
 pub struct DefaultSettings {
@@ -59,12 +54,20 @@ pub struct DatabaseSettings {
     db_name: String,
 }
 
-pub struct HttpSettings {
-    feature_http_port: String,
-}
+// pub struct HttpSettings {
+//     feature_http_port: String,
+// }
 
-pub struct HttpsSettings {
-    feature_https_port: String,
-    feature_https_cert: String,
-    feature_https_key: String,
+// pub struct HttpsSettings {
+//     feature_https_port: String,
+//     feature_https_cert: String,
+//     feature_https_key: String,
+// }
+
+// Functions
+fn get_env(env_name: &str) -> String {
+    match var(env_name) {
+        Ok(value) => value,
+        Err(_) => gracefully_shutdown(format!("{env_name} must be set.")),
+    }
 }
