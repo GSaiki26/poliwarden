@@ -2,6 +2,7 @@
 mod databases;
 mod errors;
 mod schemas;
+mod utils;
 
 // Functions
 #[tokio::main]

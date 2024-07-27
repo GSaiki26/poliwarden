@@ -7,8 +7,8 @@ repos:
       #   language: system
       #   pass_filenames: false
 
-      - id: cargo-click
-        name: cargo click
+      - id: cargo-clippy
+        name: cargo clippy
         entry: cargo clippy --
         language: system
         pass_filenames: false

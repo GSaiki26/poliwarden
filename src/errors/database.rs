@@ -4,7 +4,9 @@ use std::fmt::Display;
 
 // Structs
 #[derive(Debug)]
-pub struct DatabaseError {}
+pub struct DatabaseError {
+    pub message: String,
+}
 
 // Traits
 impl Error for DatabaseError {}
@@ -15,14 +17,32 @@ impl Display for DatabaseError {
     }
 }
 
+impl From<std::io::Error> for DatabaseError {
+    fn from(e: std::io::Error) -> Self {
+        DatabaseError {
+            message: e.to_string(),
+        }
+    }
+}
+
+impl From<serde_json::Error> for DatabaseError {
+    fn from(e: serde_json::Error) -> Self {
+        DatabaseError {
+            message: e.to_string(),
+        }
+    }
+}
+
 #[cfg(feature = "surreal")]
-pub mod surreal {
+mod surreal {
     use super::*;
     use surrealdb::Error;
 
     impl From<Error> for DatabaseError {
-        fn from(_: Error) -> Self {
-            DatabaseError {}
+        fn from(e: Error) -> Self {
+            DatabaseError {
+                message: e.to_string(),
+            }
         }
     }
 }

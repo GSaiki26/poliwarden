@@ -3,21 +3,26 @@ name = "poliwarden"
 version = "1.0.0"
 edition = "2021"
 
-[features]
-default = ["surreal"]
-http = []
-https = []
-surreal = ["surrealdb"]
-
 [[bin]]
 name = "poliwarden"
 path = "./src/main.rs"
 
+[features]
+default = []
+http = []
+https = []
+surreal = ["surrealdb"]
+
 [dependencies]
-chrono = { version = "0.4.38", default-features = false, features = ["serde"] }
-once_cell = { version = "1.19.0", default-features = false }
+async-trait = { version = "0.1.81", default-features = true }
+chrono = { version = "0.4.38", default-features = false, features = [
+  "now",
+  "serde",
+] }
+once_cell = { version = "1.19.0", default-features = true }
 regex = { version = "1.10.5", default-features = false }
 serde = { version = "1.0.204", default-features = true, features = ["derive"] }
+serde_json = { version = "1.0.120", default-features = true }
 surrealdb = { version = "1.5.4", default-features = false, optional = true }
 tokio = { version = "1.39.1", default-features = false, features = [
   "macros",

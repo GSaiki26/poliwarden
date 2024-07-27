@@ -1,21 +1,22 @@
 // Libs
+use crate::{databases::Database, utils::traits::Model};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 // Structs
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Identity {
-    id: String,
-    name: String,
-    host: String,
-    bearer: Option<String>,
-    certificate: Option<String>,
-    salt: String,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub id: String,
+    pub name: String,
+    pub host: String,
+    pub bearer: Option<String>,
+    pub certificate: Option<String>,
+    pub salt: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct IdentityIn {
     id: String,
     name: String,
@@ -26,13 +27,31 @@ pub struct IdentityIn {
     updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct IdentityOut {
     id: String,
     name: String,
     host: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+}
+
+// Implementations
+impl Model for Identity {
+    fn get_table_name() -> String {
+        "identity".to_string()
+    }
+
+    fn get_migration_schema<T: Database>() -> String {
+        match T::get_database_name().as_str() {
+            "filedb" => "".to_string(),
+            _ => "".to_string(),
+        }
+    }
+
+    fn get_id(&self) -> String {
+        self.id.clone()
+    }
 }
 
 #[cfg(feature = "surreal")]

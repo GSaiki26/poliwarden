@@ -13,7 +13,7 @@ Defining policies in `PoliWarden` to your identities, you can ensure that only t
 
 
 ## How it works? 🛠️
-`PoliWarden` is written in Rust, a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.
+`PoliWarden` is written in Rust, a programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.
 
 It stores the policies and identities in a database (the database can be changed based on the enabled [features](#features-)).
 
@@ -178,7 +178,7 @@ docker build --build-arg features=http -t poliwarden:latest .
 Currently, the following databases are available:
 - `surreal`: A SurrealDB database.
 
-If no database feature is enabled, JSON files'll be used to store the policies and identities. They'll be created as: `policies.json` and `identities.json` at `/app/vol/` directory.
+If no database feature is enabled, JSON files'll be used to store the policies and identities. They'll be created as: `policy.json` and `identity.json` at `/app/vol/` directory.
 
 
 ### Protocols 🌐

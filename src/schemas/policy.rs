@@ -1,20 +1,21 @@
 // Libs
+use crate::{databases::Database, utils::traits::Model};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 // Structs
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Policy {
-    id: String,
-    path: String,
-    method: String,
-    owner_id: String,
-    identity_id: String,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub id: String,
+    pub path: String,
+    pub method: String,
+    pub owner_id: String,
+    pub identity_id: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PolicyIn {
     pub path: String,
     pub method: String,
@@ -22,7 +23,7 @@ pub struct PolicyIn {
     pub identity_id: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PolicyOut {
     pub id: String,
     pub path: String,
@@ -31,6 +32,24 @@ pub struct PolicyOut {
     pub identity_id: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+// Implementations
+impl Model for Policy {
+    fn get_table_name() -> String {
+        "policy".to_string()
+    }
+
+    fn get_migration_schema<T: Database>() -> String {
+        match T::get_database_name().as_str() {
+            "filedb" => "".to_string(),
+            _ => "".to_string(),
+        }
+    }
+
+    fn get_id(&self) -> String {
+        self.id.clone()
+    }
 }
 
 #[cfg(feature = "surreal")]
