@@ -21,8 +21,8 @@ impl ModelProperties for Model {
 
     fn get_id(&self) -> String {
         match self {
-            Model::Policy(policy) => policy.id.clone(),
-            Model::Identity(identity) => identity.id.clone(),
+            Model::Policy(policy) => policy.get_id(),
+            Model::Identity(identity) => identity.get_id(),
         }
     }
 
@@ -35,3 +35,15 @@ impl ModelProperties for Model {
 }
 
 impl SerdeModel for Model {}
+
+impl From<Policy> for Model {
+    fn from(policy: Policy) -> Self {
+        Model::Policy(policy)
+    }
+}
+
+impl From<Identity> for Model {
+    fn from(identity: Identity) -> Self {
+        Model::Identity(identity)
+    }
+}

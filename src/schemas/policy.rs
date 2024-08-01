@@ -1,36 +1,70 @@
 // Libs
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use ulid::Ulid;
 
 // Structs
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Policy {
-    pub id: String,
-    pub path: String,
-    pub method: String,
-    pub owner_id: String,
-    pub identity_id: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    id: Ulid,
+    path: String,
+    method: String,
+    owner_id: String,
+    identity_id: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PolicyIn {
-    pub path: String,
-    pub method: String,
-    pub owner_id: String,
-    pub identity_id: String,
+    path: String,
+    method: String,
+    owner_id: String,
+    identity_id: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PolicyOut {
-    pub id: String,
-    pub path: String,
-    pub method: String,
-    pub owner_id: String,
-    pub identity_id: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    id: Ulid,
+    path: String,
+    method: String,
+    owner_id: String,
+    identity_id: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+}
+
+// Implementations
+impl From<PolicyIn> for Policy {
+    fn from(policy: PolicyIn) -> Self {
+        let dt = Utc::now();
+        Self {
+            id: Ulid::new(),
+            path: policy.path,
+            method: policy.method,
+            owner_id: policy.owner_id,
+            identity_id: policy.identity_id,
+            created_at: dt,
+            updated_at: dt,
+        }
+    }
+}
+
+impl PolicyIn {
+    pub fn new(path: String, method: String, owner_id: String, identity_id: String) -> Self {
+        Self {
+            path,
+            method,
+            owner_id,
+            identity_id,
+        }
+    }
+}
+
+impl Policy {
+    pub fn get_id(&self) -> String {
+        self.id.to_string()
+    }
 }
 
 #[cfg(feature = "surreal")]

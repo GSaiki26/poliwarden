@@ -63,12 +63,13 @@ The identities can be created using the `POST /identities` endpoint. The body of
 {
   "name": "example",
   "host": "example.com", // The host the policy'll foward the request to.
-  "bearer": "A valid ulid can be passed. If not, a new one'll be generated.",
+  "bearer": "A valid ulid can be passed.",
   "certificate": "-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----"
 }
 ```
 > [!TIP]
-> If the `bearer` is not defined, the identity'll be created without a bearer. The bearer can be updated later using the `PUT /identities/:id` endpoint.
+> If the `bearer` is not defined or is empty, the identity'll automatically create a bearer. The bearer can be updated later using the `PUT /identities/:id` endpoint.
+
 
 
 ### Policies 🫸
@@ -90,14 +91,15 @@ To give access to an identity, a policy needs to be created for the identity.
 The policies can be created using the `POST /policies` endpoint. The body of the request should be as follows:
 ```jsonc
 {
-  "path": "^/user/?$", // The path of the request. It's a regex pattern.
-  "method": "GET", // If the method is ALL, the policy'll be applied to all the methods.
+  "path": "^\/user\/?$", // The path of the request. It's a regex pattern.
+  "method": "^GET$", // The method of the request. It's a regex pattern.
   "owner_id": "01J3NX71DWA8P1TVSGXEBFKQ3V", // The ID of the owner. Must be a valid ULID.
   "identity_id": "01J3NX71DWZWGRZFVV1XEEXAY5" // The ID of the identity. The policy'll be applied to the identity.
 }
 ```
 > [!NOTE]
 > As the path is a regex pattern, the `^` and `$` characters are used to match the start and the end of the path. So, be careful when defining the path.
+> Also, defining the method as "\s" will match ALL the methods, even the ones that are not defined in the HTTP protocol. If you want to match all the HTTP methods, use the regex pattern `^(GET|POST|PUT|DELETE)$`, or the sugar syntax `^ALL$`.
 
 
 ### Revoking Access 🔒
@@ -159,8 +161,6 @@ erDiagram
 
 The `identity` stores the identities of the clients. The `policy` stores the policies of the identities. The `identity` and `policy` tables are connected with a one-to-many relationship.
 
-The bearer and the certificate are used to identify the clients. The salt is used to hash the bearer and the certificate. So, watchout to 
-
 
 ## Features 💪
 The application can be built with different features to enable different databases and protocols.
@@ -204,16 +204,15 @@ The application can be configured using the following environment variables:
 > Since the `http` feature can only check the bearer, setting the `POLIWARDEN_DISABLE_BEARER`
 > will make the application ignore all the requests. Including the `master` identity.
 
-| Variable                    | Description                                           |
-| :-------------------------- | :---------------------------------------------------- |
-| `RUST_LOG`                  | The log level of the application                      |
-| `POLIWARDEN_MASTER_BEARER`  | The master bearer to access the application           |
-| `POLIWARDEN_MASTER_CERT`    | The master certificate to access the application      |
-| `POLIWARDEN_BEARER_HEADER`  | The header to get the bearer from the request         |
-| `POLIWARDEN_DISABLE_BEARER` | The flag to disable the bearer authentication.        |
-| `POLIWARDEN_SECRET_KEY`     | The secret key to hash the bearer and the certificate |
+| Variable                    | Required | Default               | Description                                      |
+| :-------------------------- | :------: | --------------------- | :----------------------------------------------- |
+| `POLIWARDEN_LOG_LEVEL`      |    No    | `"INFO"`              | The log level of the application                 |
+| `POLIWARDEN_MASTER_BEARER`  |    No    | `Ulid`                | The master bearer to access the application      |
+| `POLIWARDEN_MASTER_CERT`    |    No    | `None`                | The master certificate to access the application |
+| `POLIWARDEN_BEARER_HEADER`  |    No    | `"Poliwarden-Bearer"` | The header to get the bearer from the request    |
+| `POLIWARDEN_DISABLE_BEARER` |    No    | `False`               | The flag to disable the bearer authentication.   |
 
-
+<!-- 
 ### Database Environment Variables 📄
 | Variable                 | Description                  |
 | :----------------------- | :--------------------------- |
@@ -235,4 +234,4 @@ The application can be configured using the following environment variables:
 | :------------------------------ | :------------------------------- |
 | `POLIWARDEN_FEATURE_HTTPS_PORT` | The port of the application      |
 | `POLIWARDEN_FEATURE_HTTPS_CERT` | The path of the certificate file |
-| `POLIWARDEN_FEATURE_HTTPS_KEY`  | The path of the key file         |
+| `POLIWARDEN_FEATURE_HTTPS_KEY`  | The path of the key file         | --> |

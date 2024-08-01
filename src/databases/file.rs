@@ -168,7 +168,7 @@ impl Database for FileDatabase {
     }
 
     async fn is_first_run(&self) -> Result<bool, DatabaseError> {
-        info!("Checking if first run...");
+        info!("Checking if it's the application's first run...");
 
         let identity_model = Model::Identity(Identity::default());
         let table_path = self.get_table_path(&identity_model.get_table_name());

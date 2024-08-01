@@ -1,5 +1,5 @@
 // Libs
-use services::{init_db, DATABASE};
+use services::DatabaseService;
 use tracing::info;
 use utils::utils::{gracefully_shutdown, setup_logger};
 
@@ -15,17 +15,9 @@ mod utils;
 async fn main() {
     setup_logger();
 
-    if let Err(e) = init_db().await {
+    if let Err(e) = DatabaseService::init_db().await {
         gracefully_shutdown(e);
     }
-    DATABASE
-        .get()
-        .unwrap()
-        .read()
-        .await
-        .get("identity", "yes")
-        .await
-        .unwrap();
 
     info!("Hello, world!");
 }
