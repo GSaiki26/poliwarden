@@ -98,7 +98,7 @@ impl EnvValidator {
     Validate and return the database port.
     */
     pub fn validate_db_port() -> String {
-        match get_env("POLIWARDEN_DB_PORT").parse::<u8>() {
+        match get_env("POLIWARDEN_DB_PORT").parse::<u16>() {
             Ok(_) => get_env("POLIWARDEN_DB_PORT"),
             Err(_) => gracefully_shutdown("Invalid database port."),
         }

@@ -68,7 +68,8 @@ The identities can be created using the `POST /identities` endpoint. The body of
 }
 ```
 > [!TIP]
-> If the `bearer` is not defined or is empty, the identity'll automatically create a bearer. The bearer can be updated later using the `PUT /identities/:id` endpoint.
+> If the `bearer` is not defined or is empty, the identity'll automatically create a bearer. The created bearer'll be displayed in a INFO log.
+> The bearer can be updated later using the `PUT /identities/:id` endpoint.
 
 
 

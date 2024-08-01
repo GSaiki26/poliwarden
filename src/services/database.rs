@@ -1,6 +1,6 @@
 // libs
 use super::Migrations;
-use crate::{databases::FileDatabase, errors::DatabaseError, traits::Database};
+use crate::{databases::FileDatabase, errors::DBResult, traits::Database};
 use std::sync::Arc;
 use tokio::sync::{OnceCell, RwLock};
 use tracing::info;
@@ -13,7 +13,7 @@ pub struct DatabaseService;
 
 // Implementations
 impl DatabaseService {
-    pub async fn init_db() -> Result<(), DatabaseError> {
+    pub async fn init_db() -> DBResult<()> {
         info!("Initializing the database...");
         let db = DATABASE
             .get_or_init(|| async {
@@ -37,7 +37,7 @@ impl DatabaseService {
     /**
     A method to be called on the first run of the application.
     */
-    async fn run_migrations() -> Result<(), DatabaseError> {
+    async fn run_migrations() -> DBResult<()> {
         Migrations::new().run().await
     }
 }
