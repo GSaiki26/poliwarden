@@ -1692,8 +1692,10 @@ dependencies = [
 name = "poliwarden"
 version = "1.0.0"
 dependencies = [
+ "argon2",
  "async-trait",
  "chrono",
+ "hex",
  "once_cell",
  "regex",
  "serde",
@@ -1703,6 +1705,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "ulid",
+ "url",
 ]
 
 [[package]]

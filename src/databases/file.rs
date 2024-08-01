@@ -1,6 +1,6 @@
 // Libs
 use crate::{
-    errors::DatabaseError,
+    errors::DBResult,
     schemas::{Identity, Model},
     traits::{database::Database, ModelProperties},
 };
@@ -79,12 +79,12 @@ impl Database for FileDatabase {
         return String::from("filedb");
     }
 
-    async fn connect(&self) -> Result<(), DatabaseError> {
+    async fn connect(&self) -> DBResult<()> {
         debug!("connect() called.");
         Ok(())
     }
 
-    async fn get(&self, table_name: &str, id: &str) -> Result<Option<Model>, DatabaseError> {
+    async fn get(&self, table_name: &str, id: &str) -> DBResult<Option<Model>> {
         let span = tracing::span!(Level::INFO, "", table = table_name, id = id);
         let _enter = span.enter();
         info!("Getting model by id...");
@@ -97,7 +97,7 @@ impl Database for FileDatabase {
         Ok(result)
     }
 
-    async fn get_all(&self, table_name: &str) -> Result<Vec<Model>, DatabaseError> {
+    async fn get_all(&self, table_name: &str) -> DBResult<Vec<Model>> {
         let span = tracing::span!(Level::INFO, "", table = table_name);
         let _enter = span.enter();
         info!("Getting all models...");
@@ -108,7 +108,7 @@ impl Database for FileDatabase {
         Ok(result)
     }
 
-    async fn insert(&self, table_name: &str, data: &Model) -> Result<(), DatabaseError> {
+    async fn insert(&self, table_name: &str, data: &Model) -> DBResult<()> {
         let span = tracing::span!(Level::INFO, "", table = table_name);
         let _enter = span.enter();
         info!("Inserting model...");
@@ -121,7 +121,7 @@ impl Database for FileDatabase {
         Ok(())
     }
 
-    async fn update(&self, table_name: &str, data: &Model) -> Result<Option<()>, DatabaseError> {
+    async fn update(&self, table_name: &str, data: &Model) -> DBResult<Option<()>> {
         let span = tracing::span!(Level::INFO, "", table = table_name, id = data.get_id());
         let _enter = span.enter();
         info!("Updating model by id...");
@@ -137,7 +137,7 @@ impl Database for FileDatabase {
         Ok(Some(()))
     }
 
-    async fn delete(&self, table_name: &str, id: &str) -> Result<Option<()>, DatabaseError> {
+    async fn delete(&self, table_name: &str, id: &str) -> DBResult<Option<()>> {
         let span = tracing::span!(Level::INFO, "", table = table_name, id = id);
         let _enter = span.enter();
         info!("Deleting model by id...");
@@ -153,7 +153,7 @@ impl Database for FileDatabase {
         Ok(Some(()))
     }
 
-    async fn query(&self, query: &str) -> Result<Vec<Model>, DatabaseError> {
+    async fn query(&self, query: &str) -> DBResult<Vec<Model>> {
         // The table_name'll be passed as a query.
 
         self.create_database_directory()?;
@@ -167,8 +167,8 @@ impl Database for FileDatabase {
         Ok(vec![])
     }
 
-    async fn is_first_run(&self) -> Result<bool, DatabaseError> {
-        info!("Checking if first run...");
+    async fn is_first_run(&self) -> DBResult<bool> {
+        info!("Checking if it's the application's first run...");
 
         let identity_model = Model::Identity(Identity::default());
         let table_path = self.get_table_path(&identity_model.get_table_name());
